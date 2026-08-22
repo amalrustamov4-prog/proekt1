@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: bizcore_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://bizcore_user:bizcore_pass@postgres:5432/bizcore_db
+      - SECRET_KEY=bizcore-prod-super-secret-key-2026-uz
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bizcore_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: bizcore_user
+      POSTGRES_PASSWORD: bizcore_pass
+      POSTGRES_DB: bizcore_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: bizcore_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
